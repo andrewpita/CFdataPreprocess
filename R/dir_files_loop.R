@@ -1,4 +1,7 @@
 
+source("month_create.R")
+source("compile_months.R")
+
 
 top.dirs = dir()
 
@@ -10,7 +13,7 @@ for (i in 1:length(top.dirs)) {
   
   year = substr(top.dirs[i],1,4)
   
-  dir.create(year)
+  dir.create(paste("../../",year,"_csv", sep = ""))
   
   
   for (j in 1:length(sub.dirs)) {
@@ -24,6 +27,7 @@ for (i in 1:length(top.dirs)) {
     if (as.numeric(year) > 2007) {
       
       month.list = month_post2007(daily)
+      
     }
     else {
       
@@ -41,7 +45,7 @@ for (i in 1:length(top.dirs)) {
     
     csv.file = list.files(pattern = ".csv$")
     
-    file.copy(csv.file, paste("../",year, sep = "")
+    file.copy(csv.file, paste("../../../",year,"_csv", sep = ""))
     
     setwd("..")
     
@@ -50,3 +54,4 @@ for (i in 1:length(top.dirs)) {
   setwd("..")
   
 }
+
