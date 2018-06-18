@@ -57,7 +57,7 @@ for (i in 1:length(top.dirs)) {
     }
     else {
       
-      if (as.numeric(year) == 2007 && as.numeric(substr(daily,5,6)) > 07) {
+      if (as.numeric(year) == 2007 && as.numeric(substr(daily,5,6)) > 04) {
         
         month.list = month_post2007(daily)
       }

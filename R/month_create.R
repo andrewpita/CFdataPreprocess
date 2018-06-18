@@ -62,7 +62,7 @@ month_pre2007 = function(daily) {
                              "character","character","character","character","numeric",
                              "numeric","character","character","character","character",
                              "character","character","character","character","character"),
-                         na.strings = c("M","T","-","sETE","****"))
+                         na.strings = c("M","T","-","sETE","****","E","P"))
   
   # reading in the station.txt pipe delimitted file.
   
