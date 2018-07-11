@@ -2,92 +2,62 @@
 library(dplyr)
 library(lubridate)
 
+#function that takes as input a variable of interest,
+#numeric values of latitude and longitude, and a character
+#year month day date (slashes or no slashes, both work)
+
 variable_table_create = function(variable, lat, long, date) {
   
+  #take the character input and make a date
+  #using lubridates function 
   d = ymd(date)
+  
+  #extract the year using another lubridate function.
+  #Since we're looking for a window of 30 days before
+  #first infection, we only need to read the csv containing
+  #that years data
   year = year(d)
   
-  #files = list.files(pattern = ".csv$")
-  #n = files[1]
-  #year = substr(n, 1,4)
+  #read the appropriate csv file
   
   csv = read.csv(paste(year,".csv",sep = ""), header = TRUE, colClasses = "character" )
   
-  csv = select(csv, Latitude, Longitude, YearMonthDay, Tmax)
+  #select only the variable of interest
+  csv = select(csv, Latitude, Longitude, YearMonthDay, variable)
   
-  
+  #create date objects from the character vector of dates in the 
+  #csv. We use ifelse to account for the missing data
   csv$YearMonthDay = ifelse(csv$YearMonthDay == "M", NA,
                             as.Date(csv$YearMonthDay, format = "%Y%m%d"))
   
+  #converting character latitude to numeric
   csv$Latitude = ifelse(csv$Latitude == "M", "M",as.numeric(csv$Latitude))
   
   csv$Longitude = ifelse(csv$Longitude == "M", "M", as.numeric(csv$Longitude))
   
+  #grab data that matches our criteria
   csv = filter(csv, Latitude == lat & Longitude == long &
-                    YearMonthDay > as.Date(date) - 10 &
+                    YearMonthDay > as.Date(date) - 30 &
                     YearMonthDay < as.Date(date))
   
+  #this is the total number of data matching the criteria
   total = length(csv[,1])
-  miss = csv[,4] == "M"
+  #total number missing of the data that matches the criteria
+  miss = sum(csv[,4] == "M")
+  #percent missing
   percent = miss/total
   
+  #store and name the quantities above
   var.mat = c(total,miss,percent)
   names(var.mat) = c("Total Match", "Missing", "Percent")
   
-  for (i in 2:length(files)) {
-    
-    csv.loop = read.csv(files[i], header = TRUE)
-    
-    csv.loop = select(csv.loop, Latitude, Longitude, YearMonthDay, 
-                      variable)
-    
-    csv.loop$YearMonthDay = as.Date(as.character(csv$YearMonthDay), 
-                                    format = "%Y%m%d")
-    
-    csv.loop$Latitude = as.numeric(as.character(csv.loop$Latitude))
-    
-    csv.loop$Longitude = as.numeric(as.character(csv.loop$Longitude))
-    
-    
-    csv.loop = filter(csv.loop, Latitude == lat & Longitude == long &
-                      YearMonthDay > as.Date(date) - 10 &
-                      YearMonthDay < as.Date(date))
-    
-    total = length(csv.loop[,1])
-    miss = sum(csv.loop[,4] == "M")
-    percent = miss/total
-    
-    v = c(total, miss, percent)
-    
-    
-    var.mat = rbind(var.mat, v)
-  }
-  
-  
-  #write.csv(csv, file = paste(variable,".csv", sep = ""), row.names = FALSE)
   return(var.mat)
   
 }
 
 
-check_location_missing = function(csv, lat, long, date) {
-  
-  csv = filter(csv, Latitude == lat, Longitude == long, YearMonthDay > date - 30)
-  
-  count = csv[,3] == "M"
-  
-  percent = sum(count)/length(count)
-  
-  print(percent)
-  
-  
-}
+#tmax = variable_table_create("Tmax", 38.04, -102.41, "2005-01-29")
 
-
-tmax = variable_table_create("Tmax", 38.04, -102.41, "2005-01-29")
-
-
-head(tmax)
 
 
 
