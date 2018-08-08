@@ -1,4 +1,0 @@
-Package: CFdataPreprocess
-Version: 0.1
-Imports:
-	dplyr
